@@ -1,69 +1,38 @@
-var selectedRow = null;
 
-function onFormSubmit(e) {
-  event.preventDefault();
-  var formData = readFormData();
-  if (selectedRow == null) {
-    insertNewRecord(formData);
-  } else {
-    updateRecord(formData);
-  }
-  resetForm();
-}
+const output = document.querySelector(".output");
+const result = document.querySelector(".result");
+const keys = document.querySelectorAll("button");
+keys.forEach(key=>{
+    key.addEventListener("click",calculate);
+});
 
-function readFormData() {
-  var formData = {};
-  formData["Name"] = document.getElementById("Name").value;
-  formData["Mobile"] = document.getElementById("Mobile").value;
-  formData["Email"] = document.getElementById("Email").value;
+function calculate(){
+    let buttonText = this.innerText;
+    if(buttonText==="AC"){
+        output.innerText = "";
+        result.innerText = "0";
+        result.style.animation = "";
+        output.style.animation = "";
+        return;
+    }
 
-  return formData;
-}
+    if(buttonText === "DEL"){
+        output.textContent = output.textContent.substr(0,output.textContent.length-1);
+        return;
+    }
 
-function insertNewRecord(data) {
-  var table = document
-    .getElementById("storeList")
-    .getElementsByTagName("tbody")[0];
-  var newRow = table.insertRow(table.length);
-  cell1 = newRow.insertCell(0);
-  cell1.innerHTML = data.Name;
-  cell2 = newRow.insertCell(1);
-  cell2.innerHTML = data.Mobile;
-  cell3 = newRow.insertCell(2);
-  cell3.innerHTML = data.Email;
+    if(buttonText === "="){
+        result.innerText = eval(output.innerText);
+        result.style.animation = "big 0.5s ease-in-out";
+        output.style.animation = "small 0.5s ease-in-out";
+        result.style.animationFillMode = "forwards";
+        output.style.animationFillMode = "forwards";
+    }
 
-  cell5.innerHTML = `<button onClick="onEdit(this)">Edit</button> 
-                    <button onClick="onDelete(this)">Delete</button>`
-}
+    else{
+        output.textContent += buttonText;
+        return;
+    }
 
-function onEdit(td) {
-  selectedRow = td.parentElement.parentElement;
-  document.getElementById("Name").value = selectedRow.cells[0].innerHTML;
-  document.getElementById("Mobile").value = selectedRow.cells[1].innerHTML;
-  document.getElementById("Email").value = selectedRow.cells[2].innerHTML;
-
-
-}
-function updateRecord(formData) {
-  selectedRow.cells[0].innerHTML = formData.Name;
-  selectedRow.cells[1].innerHTML = formData.Mobile;
-  selectedRow.cells[2].innerHTML = formData.Email;
-
-
-}
-
-function onDelete(td) {
-  if (confirm("Do you want to delete this record?")) {
-    row = td.parentElement.parentElement;
-    document.getElementById("storeList").deleteRow(row.rowIndex);
-    resetForm();
-  }
-}
-
-function resetForm() {
-  document.getElementById("Name").value = "";
-  document.getElementById("Mobile").value = "";
-  document.getElementById("Email").value = "";
-
-  selectedRow = null;
+  
 }
