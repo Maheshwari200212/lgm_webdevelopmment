@@ -1,62 +1,69 @@
-window.addEventListener('load', () => {
-	const form = document.querySelector("#new-task-form");
-	const input = document.querySelector("#new-task-input");
-	const list_el = document.querySelector("#tasks");
+var selectedRow = null;
 
-	form.addEventListener('submit', (e) => {
-		e.preventDefault();
+function onFormSubmit(e) {
+  event.preventDefault();
+  var formData = readFormData();
+  if (selectedRow == null) {
+    insertNewRecord(formData);
+  } else {
+    updateRecord(formData);
+  }
+  resetForm();
+}
 
-		const task = input.value;
+function readFormData() {
+  var formData = {};
+  formData["Name"] = document.getElementById("Name").value;
+  formData["Mobile"] = document.getElementById("Mobile").value;
+  formData["Email"] = document.getElementById("Email").value;
 
-		const task_el = document.createElement('div');
-		task_el.classList.add('task');
+  return formData;
+}
 
-		const task_content_el = document.createElement('div');
-		task_content_el.classList.add('content');
+function insertNewRecord(data) {
+  var table = document
+    .getElementById("storeList")
+    .getElementsByTagName("tbody")[0];
+  var newRow = table.insertRow(table.length);
+  cell1 = newRow.insertCell(0);
+  cell1.innerHTML = data.Name;
+  cell2 = newRow.insertCell(1);
+  cell2.innerHTML = data.Mobile;
+  cell3 = newRow.insertCell(2);
+  cell3.innerHTML = data.Email;
 
-		task_el.appendChild(task_content_el);
+  cell5.innerHTML = `<button onClick="onEdit(this)">Edit</button> 
+                    <button onClick="onDelete(this)">Delete</button>`
+}
 
-		const task_input_el = document.createElement('input');
-		task_input_el.classList.add('text');
-		task_input_el.type = 'text';
-		task_input_el.value = task;
-		task_input_el.setAttribute('readonly', 'readonly');
+function onEdit(td) {
+  selectedRow = td.parentElement.parentElement;
+  document.getElementById("Name").value = selectedRow.cells[0].innerHTML;
+  document.getElementById("Mobile").value = selectedRow.cells[1].innerHTML;
+  document.getElementById("Email").value = selectedRow.cells[2].innerHTML;
 
-		task_content_el.appendChild(task_input_el);
 
-		const task_actions_el = document.createElement('div');
-		task_actions_el.classList.add('actions');
-		
-		const task_edit_el = document.createElement('button');
-		task_edit_el.classList.add('edit');
-		task_edit_el.innerText = 'Edit';
+}
+function updateRecord(formData) {
+  selectedRow.cells[0].innerHTML = formData.Name;
+  selectedRow.cells[1].innerHTML = formData.Mobile;
+  selectedRow.cells[2].innerHTML = formData.Email;
 
-		const task_delete_el = document.createElement('button');
-		task_delete_el.classList.add('delete');
-		task_delete_el.innerText = 'Delete';
 
-		task_actions_el.appendChild(task_edit_el);
-		task_actions_el.appendChild(task_delete_el);
+}
 
-		task_el.appendChild(task_actions_el);
+function onDelete(td) {
+  if (confirm("Do you want to delete this record?")) {
+    row = td.parentElement.parentElement;
+    document.getElementById("storeList").deleteRow(row.rowIndex);
+    resetForm();
+  }
+}
 
-		list_el.appendChild(task_el);
+function resetForm() {
+  document.getElementById("Name").value = "";
+  document.getElementById("Mobile").value = "";
+  document.getElementById("Email").value = "";
 
-		input.value = '';
-
-		task_edit_el.addEventListener('click', (e) => {
-			if (task_edit_el.innerText.toLowerCase() == "edit") {
-				task_edit_el.innerText = "Save";
-				task_input_el.removeAttribute("readonly");
-				task_input_el.focus();
-			} else {
-				task_edit_el.innerText = "Edit";
-				task_input_el.setAttribute("readonly", "readonly");
-			}
-		});
-
-		task_delete_el.addEventListener('click', (e) => {
-			list_el.removeChild(task_el);
-		});
-	});
-});
+  selectedRow = null;
+}
